@@ -11,7 +11,7 @@ import json
 from pykafka import KafkaClient
 import time
 
-topic = None
+
 
 with open('app_conf.yml', 'r') as f:
     app_config = yaml.safe_load(f.read())
@@ -67,7 +67,13 @@ def return_book(body):
 
     return NoContent, 201
 
-def create_kafka_connection():
+
+app = connexion.FlaskApp(__name__, specification_dir='')
+app.add_api("openapi.yml",
+            strict_validation=True,
+            validate_responses=True)
+
+if __name__ == "__main__":
     retry_count = 0
     while retry_count < int(app_config['connection']['retry_count']):
         logger.info(f"KafkaClient connection attempt #{retry_count}")
@@ -82,14 +88,6 @@ def create_kafka_connection():
             logger.error("Kafka connection failed... retrying...")
             time.sleep(int(app_config['connection']['sleep_duration']))
             retry_count+=1
-    
-
-app = connexion.FlaskApp(__name__, specification_dir='')
-app.add_api("openapi.yml",
-            strict_validation=True,
-            validate_responses=True)
-
-if __name__ == "__main__":
-    create_kafka_connection()
+            
     app.run(port=8080)
 
