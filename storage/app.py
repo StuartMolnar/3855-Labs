@@ -140,6 +140,7 @@ def process_messages():
             global topic
             topic = client.topics[str.encode(app_config['events']['topic'])]
             logger.debug("Succesfully connected to kafka")
+            break
         except Exception as e:
             logger.error(f"Error: {e}")
             logger.error("Kafka connection failed... retrying...")
