@@ -5,7 +5,7 @@
 <h4>Hard to reproduce errors</h4>
 
 - mySQL does not store events
-- Processing service stores the error 500 message from Storage, and then throws an error itself (screenshot at bottom)
+- Processing service stores the error 500 message from Storage, and then throws an error itself
 
 As of right now, mysql is storing events
 
@@ -36,7 +36,3 @@ Fix: take processing service down before recreating tables
 <h4>postman for processing</h4>
 
 ![alt text](./images/6th.png)
-
-<h4>error 500 issue</h4>
-
-![alt text](./images/error2.png)
