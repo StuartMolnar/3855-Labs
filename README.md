@@ -1,3 +1,34 @@
+<h4>Lab 8</h4>
+
+<h4>Processing service
+
+<h4>With 10 in database</h4>
+
+![alt text](./images/8-1.png)
+
+<h4></h4>
+
+![alt text](./images/8-2.png)
+
+<h4></h4>
+
+![alt text](./images/8-3.png)
+
+<h4>Add 2 more to database, index 12 should now be available</h4>
+
+![alt text](./images/8-4.png)
+
+<h4></h4>
+
+![alt text](./images/8-5.png)
+
+<h4></h4>
+
+![alt text](./images/8-6.png)
+
+
+----------------------------------------------------
+
 <h4> Issue </h4>
 
 - Processing service does not store events on VM.
