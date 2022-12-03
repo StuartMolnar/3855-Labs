@@ -36,9 +36,10 @@ def get_stats():
     stats = Stats(1,
                   1,
                   1,
+                  1.00,
                   1,
-                  1,
-                  1)
+                  datetime.datetime.now()
+                  )
     
     return stats.to_dict, 200
 
