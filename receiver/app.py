@@ -75,7 +75,8 @@ def create_kafka_connection():
             client = KafkaClient(hosts=hostname)
             global topic 
             topic = client.topics[str.encode(app_config['events']['topic'])]
-        except:
+        except Exception as e:
+            logger.error(f"Error: {e}")
             logger.error("Kafka connection failed... retrying...")
             time.sleep(int(app_config['connection']['sleep_duration']))
             retry_count+=1

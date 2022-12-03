@@ -133,12 +133,15 @@ def process_messages():
     retry_count = 0
     while retry_count < int(app_config['connection']['retry_count']):
         logger.info(f"KafkaClient connection attempt #{retry_count}")
+        topic = None
 
         try:
             hostname = f"{app_config['events']['hostname']}:{app_config['events']['port']}"
             client = KafkaClient(hosts=hostname)
             topic = client.topics[str.encode(app_config['events']['topic'])]
-        except:
+            logger.debug("Succesfully connected to kafka")
+        except Exception as e:
+            logger.error(f"Error: {e}")
             logger.error("Kafka connection failed... retrying...")
             time.sleep(int(app_config['connection']['sleep_duration']))
             retry_count+=1
