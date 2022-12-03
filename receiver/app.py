@@ -11,6 +11,8 @@ import json
 from pykafka import KafkaClient
 import time
 
+topic = None
+
 with open('app_conf.yml', 'r') as f:
     app_config = yaml.safe_load(f.read())
 
@@ -73,7 +75,6 @@ def create_kafka_connection():
         try:
             hostname = f"{app_config['events']['hostname']}:{app_config['events']['port']}"
             client = KafkaClient(hosts=hostname)
-            global topic 
             topic = client.topics[str.encode(app_config['events']['topic'])]
             break
         except Exception as e:

@@ -21,6 +21,8 @@ from pykafka.common import OffsetType
 from threading import Thread
 import json
 
+topic = None
+
 with open('log_conf.yml', 'r') as f:
     log_config = yaml.safe_load(f.read())
     logging.config.dictConfig(log_config)
@@ -137,7 +139,6 @@ def process_messages():
         try:
             hostname = f"{app_config['events']['hostname']}:{app_config['events']['port']}"
             client = KafkaClient(hosts=hostname)
-            global topic
             topic = client.topics[str.encode(app_config['events']['topic'])]
             logger.debug("Succesfully connected to kafka")
             break
