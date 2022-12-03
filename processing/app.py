@@ -54,40 +54,54 @@ def populate_stats():
     """ Periodically update stats """
     
     now = datetime.datetime.now()
-    logger.info(f'{now}')
+    logger.info(f'Populate Stats request initiated at {now}')
     now = now.strftime('%Y-%m-%dT%H:%M:%SZ')
 
     # logic for newly added entries
     # -----
     withdrawals_endpoint = f"{app_config['eventstore']['url']}/books/withdrawals?timestamp={now}"
     withdrawals_response = requests.get(withdrawals_endpoint)
-
+    logger.debug('--------withdrawals--------')
     
     logger.debug(f'withdrawals_response.json(): {withdrawals_response.json()}')
+
     for response in withdrawals_response.json():
         withdrawals_data.append(response)
 
+    #logger.debug(f'withdrawals_data: {withdrawals_data}')
+    
     if withdrawals_response.status_code != 200:
         logger.info('Status code is not 200')
+        logger.debug(f'Status code is {withdrawals_response.status_code}')
         
 
 
     #-------------------------------
 
+    logger.debug('--------returns--------')
+
     returns_endpoint = f"{app_config['eventstore']['url']}/books/returns?timestamp={now}"
     returns_response = requests.get(returns_endpoint)
+
+
+    logger.debug(f'returns_response.json(): {returns_response.json()}')
 
     for response in returns_response.json():
         returns_data.append(response)
 
+    #logger.debug(f'withdrawals_data: {returns_data}')
+
     if returns_response.status_code != 200:
         logger.info('Status code is not 200')
+        logger.debug(f'Status code is {withdrawals_response.status_code}')
 
 
     #--------------------------------
+
+    logger.debug('---------stats---------')
     
     num_bk_withdrawals = len(withdrawals_data)
-    logger.debug(f'withdrawalsdata: {withdrawals_data}')
+    logger.debug(f'withdrawals_data: {withdrawals_data}')
     num_bk_returns = len(returns_data)
     logger.debug(f'returns_data: {returns_data}')
 
