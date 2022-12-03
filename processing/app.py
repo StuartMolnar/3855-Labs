@@ -32,13 +32,14 @@ def get_stats():
     """ Get stats """
     logger.info("GET request initiated")
 
-    stats = {
-            'num_bk_withdrawals': 1,
-            'num_bk_returns': 1,
-            'max_overdue_length': 1,
-            'max_overdue_fine': 1,
-            'longest_book_withdrawn': 1
-    }
+
+    stats = Stats(1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1)
+    
     return stats, 200
 
     session = DB_SESSION()
