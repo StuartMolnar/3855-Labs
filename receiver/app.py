@@ -31,10 +31,6 @@ while retry_count < int(app_config['connection']['retry_count']):
         client = KafkaClient(hosts=hostname)
         topic = client.topics[str.encode(app_config['events']['topic'])]
         producer = topic.get_sync_producer()
-            
-
-            
-        print(client)
         break
     except Exception as e:
         logger.error(f"Error: {e}")
