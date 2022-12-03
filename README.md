@@ -1,5 +1,20 @@
-open powershell terminals
+<h4> Issue </h4>
 
-monitor receiver, storage, and processing service, as well as mysql select * book_withdrawal
+Processing service does not store events on VM.
 
-figure out service logic errors, docker works
+
+<h4>1st</h4>
+
+![alt text](./images/1st.png)
+
+<h4>2nd</h4>
+
+![alt text](./images/2nd.png)
+
+<h4>3rd</h4>
+
+![alt text](./images/3rd.png)
+
+<h4>4th</h4>
+
+![alt text](./images/4th.png)
