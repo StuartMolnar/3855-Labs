@@ -9,8 +9,8 @@ import uuid
 import datetime
 import json
 from pykafka import KafkaClient
+from pykafka.common import OffsetType
 import time
-
 
 
 with open('app_conf.yml', 'r') as f:
@@ -20,7 +20,28 @@ with open('log_conf.yml', 'r') as f:
     log_config = yaml.safe_load(f.read())
     logging.config.dictConfig(log_config)
 
-logger = logging.getLogger('basicLogger')
+logger = logging.getLogger('basicLogger')    
+
+retry_count = 0
+while retry_count < int(app_config['connection']['retry_count']):
+    logger.info(f"KafkaClient connection attempt #{retry_count}")
+
+    try:
+        hostname = f"{app_config['events']['hostname']}:{app_config['events']['port']}"
+        client = KafkaClient(hosts=hostname)
+        topic = client.topics[str.encode(app_config['events']['topic'])]
+        producer = topic.get_sync_producer()
+            
+
+            
+        print(client)
+        break
+    except Exception as e:
+        logger.error(f"Error: {e}")
+        logger.error("Kafka connection failed... retrying...")
+        time.sleep(int(app_config['connection']['sleep_duration']))
+        retry_count+=1
+
 
 def withdraw_book(body):
     """ Recieves a book withdrawal event """
@@ -52,7 +73,7 @@ def return_book(body):
     logger.info(f"Received event ReturnEvent with a trace id of {trace_id}")
 
     body['trace_id'] = trace_id
-    producer = topic.get_sync_producer()
+    
 
     msg = { "type": "ReturnEvent",
             "datetime": datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
@@ -73,25 +94,6 @@ app.add_api("openapi.yml",
             validate_responses=True)
 
 if __name__ == "__main__":
-    retry_count = 0
-    while retry_count < int(app_config['connection']['retry_count']):
-        logger.info(f"KafkaClient connection attempt #{retry_count}")
-
-        try:
-            hostname = f"{app_config['events']['hostname']}:{app_config['events']['port']}"
-            client = KafkaClient(hosts=hostname)
-            topic = client.topics[str.encode(app_config['events']['topic'])]
-
-            #print(f"topic: {client.topics[str.encode(app_config['events']['topic'])]}")
-            logger.debug(f"topic: {topic.name}")
-            print(client)
-            break
-        except Exception as e:
-            logger.error(f"Error: {e}")
-            logger.error("Kafka connection failed... retrying...")
-            time.sleep(int(app_config['connection']['sleep_duration']))
-            retry_count+=1
-
     app.run(port=8080)
     
 
