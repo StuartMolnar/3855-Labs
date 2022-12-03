@@ -41,7 +41,7 @@ def get_stats():
 
 
     if stats_list == []:
-        logger.error("Statistics do not exist ", 404)
+        logger.error("Statistics do not exist 404")
         return "Statistics do not exist ", 404
     
     logger.info("GET request completed")
