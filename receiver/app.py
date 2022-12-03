@@ -83,8 +83,8 @@ if __name__ == "__main__":
             client = KafkaClient(hosts=hostname)
             topic = client.topics[str.encode(app_config['events']['topic'])]
 
-            print(f"topic: {client.topics[all]}")
-            logger.debug(f"topic: {client.topics[all]}")
+            #print(f"topic: {client.topics[str.encode(app_config['events']['topic'])]}")
+            #logger.debug(f"topic: {client.topics[str.encode(app_config['events']['topic'])]}")
             print(client)
             break
         except Exception as e:
