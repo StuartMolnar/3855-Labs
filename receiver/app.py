@@ -9,7 +9,6 @@ import uuid
 import datetime
 import json
 from pykafka import KafkaClient
-from pykafka import SimpleConsumer
 import time
 
 
@@ -83,8 +82,10 @@ if __name__ == "__main__":
             hostname = f"{app_config['events']['hostname']}:{app_config['events']['port']}"
             client = KafkaClient(hosts=hostname)
             topic = client.topics[str.encode(app_config['events']['topic'])]
-            print(f"topic: {client.topics()}")
-            
+
+            print(f"topic: {client.topics[all]}")
+            logger.debug(f"topic: {client.topics[all]}")
+            print(client)
             break
         except Exception as e:
             logger.error(f"Error: {e}")
