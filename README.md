@@ -7,6 +7,9 @@
 - mySQL does not store events
 - Processing service stores the error 500 message from Storage, and then throws an error itself (screenshot at bottom)
 
+Figured out cause error 500 message: dropping mysql tables while processing service is running
+Fix: take processing service down before recreating tables
+
 
 <h4>1st</h4>
 
