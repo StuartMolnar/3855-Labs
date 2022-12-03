@@ -53,7 +53,7 @@ def return_book(body):
     logger.info(f"Received event ReturnEvent with a trace id of {trace_id}")
 
     body['trace_id'] = trace_id
-    logger.debuf(f"list of topics: {SimpleConsumer.topics()}")
+    logger.debug(f"topic: {topic}")
     producer = topic.get_sync_producer()
 
     msg = { "type": "ReturnEvent",
@@ -83,6 +83,7 @@ if __name__ == "__main__":
             hostname = f"{app_config['events']['hostname']}:{app_config['events']['port']}"
             client = KafkaClient(hosts=hostname)
             topic = client.topics[str.encode(app_config['events']['topic'])]
+            logger.debug(f"topic: {topic}")
             app.run(port=8080)
             break
         except Exception as e:
