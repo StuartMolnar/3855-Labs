@@ -32,6 +32,15 @@ def get_stats():
     """ Get stats """
     logger.info("GET request initiated")
 
+    stats = {
+            'num_bk_withdrawals': 1,
+            'num_bk_returns': 1,
+            'max_overdue_length': 1,
+            'max_overdue_fine': 1,
+            'longest_book_withdrawn': 1
+    }
+    return stats, 200
+
     session = DB_SESSION()
     stats = session.query(Stats).order_by(Stats.last_updated.desc())
     session.close()
@@ -49,7 +58,7 @@ def get_stats():
     logger.info("GET request completed")
     logger.debug(f"stats: {stats_list[0]}")
 
-    return [1, 1, 1, 1, 1], 200
+    
 
     return stats_list[0], 200
 
