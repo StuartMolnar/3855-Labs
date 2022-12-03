@@ -52,7 +52,6 @@ def return_book(body):
     logger.info(f"Received event ReturnEvent with a trace id of {trace_id}")
 
     body['trace_id'] = trace_id
-    print(f"topic: {client.topics()}")
     producer = topic.get_sync_producer()
 
     msg = { "type": "ReturnEvent",
@@ -84,7 +83,7 @@ if __name__ == "__main__":
             topic = client.topics[str.encode(app_config['events']['topic'])]
 
             #print(f"topic: {client.topics[str.encode(app_config['events']['topic'])]}")
-            #logger.debug(f"topic: {client.topics[str.encode(app_config['events']['topic'])]}")
+            logger.debug(f"topic: {topic.name}")
             print(client)
             break
         except Exception as e:
