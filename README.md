@@ -1,6 +1,6 @@
 <h4> Issue </h4>
 
-Processing service does not store events on VM.
+- Processing service does not store events on VM.
 
 <h4>Hard to reproduce errors</h4>
 
