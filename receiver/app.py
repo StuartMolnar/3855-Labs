@@ -53,7 +53,7 @@ def return_book(body):
     logger.info(f"Received event ReturnEvent with a trace id of {trace_id}")
 
     body['trace_id'] = trace_id
-    logger.debug(f"topic: {topic}")
+    logger.debug(f"topic: {client.topics()}")
     producer = topic.get_sync_producer()
 
     msg = { "type": "ReturnEvent",
@@ -83,8 +83,8 @@ if __name__ == "__main__":
             hostname = f"{app_config['events']['hostname']}:{app_config['events']['port']}"
             client = KafkaClient(hosts=hostname)
             topic = client.topics[str.encode(app_config['events']['topic'])]
-            logger.debug(f"topic: {topic}")
-            app.run(port=8080)
+            logger.debug(f"topic: {client.topics()}")
+            
             break
         except Exception as e:
             logger.error(f"Error: {e}")
@@ -92,5 +92,6 @@ if __name__ == "__main__":
             time.sleep(int(app_config['connection']['sleep_duration']))
             retry_count+=1
 
+    app.run(port=8080)
     
 
