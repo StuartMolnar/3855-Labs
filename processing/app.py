@@ -58,14 +58,20 @@ returns_data = []
 def populate_stats():
     """ Periodically update stats """
     
-    now = datetime.datetime.now()
-    logger.info(f'Populate Stats request initiated at {now}')
-    now = now.strftime('%Y-%m-%dT%H:%M:%SZ')
+    last_updated = datetime.datetime.now()
+    
+    
+    logger.info(f'Populate Stats request initiated at {last_updated}')
 
     # logic for newly added entries
     # -----
-    withdrawals_endpoint = f"{app_config['eventstore']['url']}/books/withdrawals?timestamp={now}"
-    withdrawals_response = requests.get(withdrawals_endpoint)
+    withdrawals_endpoint = f"{app_config['eventstore']['url']}/books/withdrawals"
+    withdrawals_parameter1 = f"?start_timestamp={last_updated.strftime('%Y-%m-%dT%H:%M:%SZ')}"
+
+    current_timestamp = datetime.datetime.now()
+    withdrawals_parameter2 = f"&end_timestamp={current_timestamp.strftime('%Y-%m-%dT%H:%M:%SZ')}"
+
+    withdrawals_response = requests.get(withdrawals_endpoint+withdrawals_parameter1+withdrawals_parameter2)
     logger.debug('--------withdrawals--------')
     
     logger.debug(f'withdrawals_response.json(): {withdrawals_response.json()}')
@@ -85,8 +91,13 @@ def populate_stats():
 
     logger.debug('--------returns--------')
 
-    returns_endpoint = f"{app_config['eventstore']['url']}/books/returns?timestamp={now}"
-    returns_response = requests.get(returns_endpoint)
+    returns_endpoint = f"{app_config['eventstore']['url']}/books/returns"
+    returns_parameter1 = f"?start_timestamp={last_updated.strftime('%Y-%m-%dT%H:%M:%SZ')}"
+    
+    current_timestamp = datetime.datetime.now()
+    returns_parameter2 = f"&end_timestamp={current_timestamp.strftime('%Y-%m-%dT%H:%M:%SZ')}"
+
+    returns_response = requests.get(returns_endpoint+returns_parameter1+returns_parameter2)
 
 
     logger.debug(f'returns_response.json(): {returns_response.json()}')
@@ -130,14 +141,13 @@ def populate_stats():
     if withdrawals_response.json() != [] or returns_response.json() != []:
             
         session = DB_SESSION()
-        last_updated = datetime.datetime.now()
 
         stats = Stats(num_bk_withdrawals,
                     num_bk_returns,
                     max_overdue_length,
                     max_overdue_fine,
                     longest_book_withdrawn,
-                    last_updated
+                    current_timestamp
         )
                             
         session.add(stats)

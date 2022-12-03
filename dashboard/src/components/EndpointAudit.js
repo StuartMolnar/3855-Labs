@@ -6,6 +6,8 @@ export default function EndpointAudit(props) {
     const [log, setLog] = useState(null);
     const [error, setError] = useState(null)
 	const rand_val = Math.floor(Math.random() * 100); // Get a random event from the event store
+    const [index, setIndex] = useState(null);
+
 
     const getAudit = () => {
         fetch(`http://lab6.eastus.cloudapp.azure.com:8110/${props.endpoint}?index=${12}`)
@@ -17,6 +19,7 @@ export default function EndpointAudit(props) {
             },(error) =>{
                 setError(error)
                 setIsLoaded(true);
+                setIndex(0);
             })
     }
 	useEffect(() => {
@@ -32,7 +35,7 @@ export default function EndpointAudit(props) {
         
         return (
             <div>
-                <h3>{props.endpoint}-{12}</h3>
+                <h3>{props.endpoint}-{index}</h3>
                 {JSON.stringify(log)}
             </div>
         )

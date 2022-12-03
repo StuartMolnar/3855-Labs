@@ -9,6 +9,7 @@ import uuid
 import datetime
 import json
 from pykafka import KafkaClient
+import time
 
 with open('app_conf.yml', 'r') as f:
     app_config = yaml.safe_load(f.read())
@@ -27,9 +28,6 @@ def withdraw_book(body):
     
     body['trace_id'] = trace_id
 
-    hostname = f"{app_config['events']['hostname']}:{app_config['events']['port']}"
-    client = KafkaClient(hosts=hostname)
-    topic = client.topics[str.encode(app_config['events']['topic'])]
     producer = topic.get_sync_producer()
 
     msg = { "type": "WithdrawalEvent",
@@ -53,9 +51,6 @@ def return_book(body):
 
     body['trace_id'] = trace_id
 
-    hostname = f"{app_config['events']['hostname']}:{app_config['events']['port']}"
-    client = KafkaClient(hosts=hostname)
-    topic = client.topics[str.encode(app_config['events']['topic'])]
     producer = topic.get_sync_producer()
 
     msg = { "type": "ReturnEvent",
@@ -70,6 +65,21 @@ def return_book(body):
 
     return NoContent, 201
 
+def create_kafka_connection():
+    retry_count = 0
+    while retry_count < int(app_config['connection']['retry_count']):
+        logger.info(f"KafkaClient connection attempt #{retry_count}")
+
+        try:
+            hostname = f"{app_config['events']['hostname']}:{app_config['events']['port']}"
+            client = KafkaClient(hosts=hostname)
+            global topic 
+            topic = client.topics[str.encode(app_config['events']['topic'])]
+        except:
+            logger.error("Kafka connection failed... retrying...")
+            time.sleep(int(app_config['connection']['sleep_duration']))
+            retry_count+=1
+    
 
 app = connexion.FlaskApp(__name__, specification_dir='')
 app.add_api("openapi.yml",
@@ -77,5 +87,6 @@ app.add_api("openapi.yml",
             validate_responses=True)
 
 if __name__ == "__main__":
+    create_kafka_connection()
     app.run(port=8080)
 

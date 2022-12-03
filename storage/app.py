@@ -2,6 +2,7 @@ import connexion
 from connexion import NoContent
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import and_
 import mysql.connector
 import pymysql
 from base import Base
@@ -12,6 +13,7 @@ import logging.config
 import uuid
 import yaml
 import datetime
+import time
 
 
 from pykafka import KafkaClient
@@ -33,16 +35,19 @@ DB_ENGINE = create_engine(f"mysql+pymysql://{app_config['datastore']['user']}:{a
 Base.metadata.bind = DB_ENGINE
 DB_SESSION = sessionmaker(bind=DB_ENGINE)
 
-def get_withdrawals(timestamp):
+def get_withdrawals(start_timestamp, end_timestamp):
     """ Gets new book withdrawals after the timestamp """
 
     session = DB_SESSION()
 
-    timestamp_datetime = datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
-
-    withdrawals = session.query(BookWithdrawal).filter(BookWithdrawal.date_created >= timestamp_datetime)
-
+    start_timestamp_datetime = datetime.datetime.strptime(start_timestamp, "%Y-%m-%dT%H:%M:%SZ")
     
+    end_timestamp_datetime = datetime.datetime.strptime(end_timestamp, "%Y-%m-%dT%H:%M:%SZ")
+
+    withdrawals = session.query(BookWithdrawal).filter(and_(BookWithdrawal.date_created >= start_timestamp_datetime,
+                                                            BookWithdrawal.date_created < end_timestamp_datetime))
+
+
     withdrawals_list = []
 
     for withdrawal in withdrawals:
@@ -50,7 +55,7 @@ def get_withdrawals(timestamp):
 
     session.close()
 
-    logger.info(f"Query for Book Withdrawal events after {timestamp} returns {len(withdrawals_list)} results")
+    logger.info(f"Query for Book Withdrawal events after {start_timestamp} returns {len(withdrawals_list)} results")
     return withdrawals_list, 200
 
 
@@ -77,14 +82,19 @@ def store_book_withdrawal(body):
 
     return NoContent, 201
 
-def get_returns(timestamp):
+def get_returns(start_timestamp, end_timestamp):
     """ Gets new book returns after the timestamp """
 
     session = DB_SESSION()
 
-    timestamp_datetime = datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
+    start_timestamp_datetime = datetime.datetime.strptime(start_timestamp, "%Y-%m-%dT%H:%M:%SZ")
+    
+    end_timestamp_datetime = datetime.datetime.strptime(end_timestamp, "%Y-%m-%dT%H:%M:%SZ")
 
-    returns = session.query(BookReturn).filter(BookReturn.date_created >= timestamp_datetime)
+    returns = session.query(BookWithdrawal).filter(and_(BookWithdrawal.date_created >= start_timestamp_datetime,
+                                                            BookWithdrawal.date_created < end_timestamp_datetime))
+
+
     returns_list = []
     for bkreturn in returns:
         returns_list.append(bkreturn.to_dict())
@@ -92,7 +102,7 @@ def get_returns(timestamp):
     session.close()
 
 
-    logger.info(f"Query for Book Return events after {timestamp} returns {len(returns_list)} results")
+    logger.info(f"Query for Book Return events after {start_timestamp} returns {len(returns_list)} results")
     return returns_list, 200
 
 def store_book_return(body):
@@ -116,11 +126,22 @@ def store_book_return(body):
 
     return NoContent, 201
 
+
 def process_messages():
     """ Process event messages """
-    hostname = f"{app_config['events']['hostname']}:{app_config['events']['port']}"
-    client = KafkaClient(hosts=hostname)
-    topic = client.topics[str.encode(app_config['events']['topic'])]
+
+    retry_count = 0
+    while retry_count < int(app_config['connection']['retry_count']):
+        logger.info(f"KafkaClient connection attempt #{retry_count}")
+
+        try:
+            hostname = f"{app_config['events']['hostname']}:{app_config['events']['port']}"
+            client = KafkaClient(hosts=hostname)
+            topic = client.topics[str.encode(app_config['events']['topic'])]
+        except:
+            logger.error("Kafka connection failed... retrying...")
+            time.sleep(int(app_config['connection']['sleep_duration']))
+            retry_count+=1
 
     # Create a consume on a consumer group, that only reads new messages
     # (uncommitted messages) when the service re-starts (i.e., it doesn't

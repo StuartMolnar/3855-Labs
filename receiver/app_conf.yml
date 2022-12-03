@@ -7,3 +7,6 @@ events:
   hostname: lab6.eastus.cloudapp.azure.com
   port: 9092
   topic: events
+connection:
+  retry_count: 100
+  sleep_duration: 1
