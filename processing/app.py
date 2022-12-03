@@ -40,7 +40,7 @@ def get_stats():
                   1,
                   1)
     
-    return stats, 200
+    return stats.to_dict, 200
 
     session = DB_SESSION()
     stats = session.query(Stats).order_by(Stats.last_updated.desc())
