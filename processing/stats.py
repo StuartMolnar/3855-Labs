@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, DateTime
+from sqlalchemy import Column, Integer, DateTime, Float
 from base import Base
 
 class Stats(Base):
@@ -8,7 +8,7 @@ class Stats(Base):
     num_bk_withdrawals = Column(Integer, nullable=False)
     num_bk_returns = Column(Integer, nullable=False)
     max_overdue_length = Column(Integer, nullable=False)
-    max_overdue_fine = Column(Integer, nullable=False)
+    max_overdue_fine = Column(Float, nullable=False)
     longest_book_withdrawn = Column(Integer, nullable=False)
     last_updated = Column(DateTime, nullable=False)
 

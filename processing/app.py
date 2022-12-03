@@ -32,17 +32,6 @@ def get_stats():
     """ Get stats """
     logger.info("GET request initiated")
 
-
-    stats = Stats(1,
-                  1,
-                  1,
-                  1.00,
-                  1,
-                  datetime.datetime.now()
-                  )
-    
-    return stats.to_dict, 200
-
     session = DB_SESSION()
     stats = session.query(Stats).order_by(Stats.last_updated.desc())
     session.close()
