@@ -9,7 +9,7 @@
 
 As of right now, mysql is storing events
 
-Figured out cause error 500 message: dropping mysql tables while processing service is running
+Figured out cause error 500 message: dropping mysql tables while processing service is running<br>
 Fix: take processing service down before recreating tables
 
 
