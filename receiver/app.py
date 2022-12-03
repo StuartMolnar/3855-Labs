@@ -9,6 +9,7 @@ import uuid
 import datetime
 import json
 from pykafka import KafkaClient
+from pykafka import SimpleConsumer
 import time
 
 
@@ -52,7 +53,7 @@ def return_book(body):
     logger.info(f"Received event ReturnEvent with a trace id of {trace_id}")
 
     body['trace_id'] = trace_id
-
+    logger.debuf(f"list of topics: {SimpleConsumer.topics()}")
     producer = topic.get_sync_producer()
 
     msg = { "type": "ReturnEvent",
@@ -82,12 +83,13 @@ if __name__ == "__main__":
             hostname = f"{app_config['events']['hostname']}:{app_config['events']['port']}"
             client = KafkaClient(hosts=hostname)
             topic = client.topics[str.encode(app_config['events']['topic'])]
+            app.run(port=8080)
             break
         except Exception as e:
             logger.error(f"Error: {e}")
             logger.error("Kafka connection failed... retrying...")
             time.sleep(int(app_config['connection']['sleep_duration']))
             retry_count+=1
-            
-    app.run(port=8080)
+
+    
 
