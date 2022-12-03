@@ -32,3 +32,6 @@
 
 ![alt text](./images/6th.png)
 
+<h4>error 500 issue</h4>
+
+![alt text](./images/error2.png)
