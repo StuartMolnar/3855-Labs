@@ -51,6 +51,8 @@ def return_book(body):
     trace_id = str(uuid.uuid4())
     logger.info(f"Received event ReturnEvent with a trace id of {trace_id}")
 
+    logger.debug(f"return book body: {body}")
+
     body['trace_id'] = trace_id
 
     hostname = f"{app_config['events']['hostname']}:{app_config['events']['port']}"
