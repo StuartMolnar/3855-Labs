@@ -38,7 +38,7 @@ def get_withdrawals(timestamp):
 
     session = DB_SESSION()
 
-    timestamp_datetime = datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
+    timestamp_datetime = datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S")
 
     withdrawals = session.query(BookWithdrawal).filter(BookWithdrawal.date_created >= timestamp_datetime)
 
@@ -82,7 +82,7 @@ def get_returns(timestamp):
 
     session = DB_SESSION()
 
-    timestamp_datetime = datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
+    timestamp_datetime = datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S")
 
     returns = session.query(BookReturn).filter(BookReturn.date_created >= timestamp_datetime)
     returns_list = []

@@ -55,7 +55,7 @@ def populate_stats():
     
     now = datetime.datetime.now()
     logger.info(f'Populate Stats request initiated at {now}')
-    now = now.strftime('%Y-%m-%dT%H:%M:%SZ')
+    now = now.strftime('%Y-%m-%dT%H:%M:%S')
 
     # logic for newly added entries
     # -----
